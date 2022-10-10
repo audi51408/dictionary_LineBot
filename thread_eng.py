@@ -7,7 +7,7 @@ import threading
 import csv
 import json
 import time
-# final = ""
+
 def translate(input, src_lang='eng', to_lang='zh-TW'):
     googleapis_url = 'https://translate.googleapis.com/translate_a/single'
     url = '%s?client=gtx&sl=%s&tl=%s&dt=t&q=%s' % (googleapis_url,src_lang,to_lang,input)
@@ -71,10 +71,13 @@ def changeString(content):
             # print("lastline重製-----------")
             lastline = ""
         # print("string: ",string)
-
     return string.rstrip()
 def queuethread(content):
     global word_list_queue
+    print(content)
+    print(changeString(content))
+    restructure = changeString(content)
+    print(restructure)
     word_list = restructure.split(".")
     global aalist
     aalist = [""]*len(word_list)
@@ -83,7 +86,6 @@ def queuethread(content):
     for i in range(len(word_list)):
         word_list_queue.put(word_list[i])
     mutex_lock = threading.Lock()
-    # 线程数为50，在一定范围内，线程数越多，速度越快
     threads = []
     for i in range(len(word_list)):
         threads.append(threading.Thread(target=addChineseToEnglish,name=str(i)))
@@ -91,13 +93,21 @@ def queuethread(content):
     for i in range(len(word_list)):
         threads[i].join()
     print("aaaaa:",aalist)
-    final = ""
-    for i in range(len(word_list)):
-        final += word_list[i]+"\n"+aalist[i]+"\n"+"\n"
+    num =35
+    word_list = [word_list[i:i + num] for i in range(0, len(word_list), num)]
+    aalist = [aalist[i:i + num] for i in range(0, len(aalist), num)]
+    reply_time = len(word_list)
+    final_reply_list = []
+    for i in range(reply_time):
+        final = ""
+        for j in range(len(word_list[i])):
+            final += word_list[i][j]+"."+"\n"+aalist[i][j]+"\n"+"\n"
+        final_reply_list.append(final)
     print("len(aalist)",len(aalist))
     print("len(word_list)",len(word_list))
+    print("final_reply_list",final_reply_list)
     print("Done.--------------------------")
-    return final
+    return final_reply_list,reply_time
 if __name__ == "__main__":
     content = """In the first round of Brazil’s presidential election Jair Bolsonaro, the
 populist incumbent, did better than expected. He had been trailing Luiz
@@ -193,9 +203,10 @@ Kainerugaba, threatened on Twitter to invade neighbouring Kenya. It was a
 joke, but Kenyans did not find it funny. Uganda’s president, Yoweri
 Museveni, stripped the general of his job but also promoted him. The
 general is his son, and possibly his favoured successor."""
-    restructure = changeString(content)
-    wl = queuethread(restructure)
-    print(wl)
+    # restructure = changeString(content)
+    # wl = queuethread(restructure)
+    # print(wl)
+    print(queuethread(content))
     
 
 

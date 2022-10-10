@@ -8,7 +8,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (FollowEvent, UnfollowEvent, MessageEvent, TextMessage, TextSendMessage, PostbackEvent, QuickReply, QuickReplyButton)
 from linebot.models.actions import (MessageAction)
-import eng as d
+import thread_eng as d
 import japToZh as jap
 import configparser
 import json
@@ -77,8 +77,15 @@ def handle_message_code(event):
         registered_data[user_id]['State'] = 'japanese'
         reply = '{}'.format('請輸入您想翻譯的日文:')
     elif state=='english':
-        reply =  d.changeString(text)
+        reply_list,replytime =  d.queuethread(text)
+        print("完成英文翻譯並開始回傳")
+        for i in range(replytime):
+            print("傳送第"+str(i+1)+"則訊息")
+            print("傳送訊息:",reply_list[i])
+            line_bot_api.push_message(user_id,TextSendMessage(text = reply_list[i]))
+            # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_list[i]))
         registered_data[user_id]['State'] = 'newcome'
+        return
     elif state=='japanese':
         reply =  jap.changeString(text)
         registered_data[user_id]['State'] = 'newcome'
