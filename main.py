@@ -8,7 +8,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (FollowEvent, UnfollowEvent, MessageEvent, TextMessage, TextSendMessage, PostbackEvent, QuickReply, QuickReplyButton)
 from linebot.models.actions import (MessageAction)
-import dictionary1 as d
+import eng as d
 import japToZh as jap
 import configparser
 import json
