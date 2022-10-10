@@ -93,7 +93,7 @@ def queuethread(content):
     for i in range(len(word_list)):
         threads[i].join()
     print("aaaaa:",aalist)
-    num =35
+    num =31
     word_list = [word_list[i:i + num] for i in range(0, len(word_list), num)]
     aalist = [aalist[i:i + num] for i in range(0, len(aalist), num)]
     reply_time = len(word_list)
